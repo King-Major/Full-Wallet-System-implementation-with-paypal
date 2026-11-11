@@ -1,17 +1,16 @@
 const express = require('express');
 const { deposit, transactionHistory } = require('../controllers/transactionController');
-const { createPaypalOrder, capturePaypalPayment } = require('../controllers/paypalController');
+const { createPaypalOrder, capturePaypalPayment, sendMoney, getPayoutStatus, getTransactionHistory } = require('../controllers/paypalController');
 const { verifyToken } = require('../middleware/authMiddleware');
-const paypalController = require('../controllers/paypalController');
-const router = express.Router();
 const auth = require('../middleware/auth');
 
-router.post('/paypal/deposit', verifyToken, createPaypalOrder); // For creating a PayPal order
-router.post('/paypal/capture', verifyToken, capturePaypalPayment); // For capturing the payment
-router.get('/history', verifyToken, transactionHistory); // For fetching transaction history
-router.post('/payout', auth, paypalController.sendMoney);
-router.get('/payout/:payoutId/status', auth, paypalController.getPayoutStatus);
-router.get('/history', auth, paypalController.getTransactionHistory);
+const router = express.Router();
 
+router.post('/paypal/deposit', verifyToken, createPaypalOrder);
+router.post('/paypal/capture', verifyToken, capturePaypalPayment);
+router.get('/history', verifyToken, transactionHistory);
+router.post('/payout', auth, sendMoney);
+router.get('/payout/:payoutId/status', auth, getPayoutStatus);
+router.get('/history-list', auth, getTransactionHistory);
 
 module.exports = router;
